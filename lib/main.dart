@@ -1,61 +1,94 @@
-import 'dart:math';
-
-import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-
-import 'package:ludo/components/board.dart';
-import 'package:ludo/components/dice.dart';
+import 'package:ludo/config.dart';
+import 'package:ludo/ludo_game.dart';
+import 'package:ludo/widgets/overlay_screen.dart';
 
 void main() {
-  runApp(GameWidget(game: LudoGame()));
+  runApp(const GameApp());
 }
 
-class LudoGame extends FlameGame with TapCallbacks {
-  late Dice dice;
-  late TextComponent turnText;
-  int currentPlayer = 0;
-  final int totalPlayers = 4;
-  final List<Color> playerColors = [
-    Colors.red,
-    Colors.green,
-    Colors.blue,
-    Colors.yellow
-  ];
+class GameApp extends StatefulWidget {
+  // Modify this line
+  const GameApp({super.key});
+
+  @override // Add from here...
+  State<GameApp> createState() => _GameAppState();
+}
+
+class _GameAppState extends State<GameApp> {
+  late final LudoGame game;
 
   @override
-  Future<void> onLoad() async {
-    add(Board(gameSize: Vector2(200, 200)));
-    dice = Dice(
-        size: Vector2(100, 100),
-        position: Vector2(size.x / 2 - 50, size.y / 2 - 50));
-    add(dice);
+  void initState() {
+    super.initState();
+    game = LudoGame();
+  } // To here.
 
-    turnText = TextComponent(
-      text: 'Player 1\'s turn',
-      position: Vector2(size.x / 2, 50),
-      anchor: Anchor.center,
-      textRenderer: TextPaint(
-          style: TextStyle(fontSize: 24, color: playerColors[currentPlayer])),
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: const Color(0xff00fbed),
+        brightness: Brightness.dark,
+      ),
+      home: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xff0f1118),
+                Color(0xff1f2228),
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: Column(
+                  // Modify from here...
+                  children: [
+                    // ScoreCard(score: game.score),
+                    Expanded(
+                      child: FittedBox(
+                        child: SizedBox(
+                          width: gameWidth,
+                          height: gameHeight,
+                          child: GameWidget(
+                            game: game,
+                            overlayBuilderMap: {
+                              PlayState.welcome.name: (context, game) =>
+                                  const OverlayScreen(
+                                    title: 'Waiting Room',
+                                    subtitle: 'Waiting for players...',
+                                  ),
+                              PlayState.gameOver.name: (context, game) =>
+                                  const OverlayScreen(
+                                    title: 'G A M E   O V E R',
+                                    subtitle: 'Tap to Play Again',
+                                  ),
+                              PlayState.won.name: (context, game) =>
+                                  const OverlayScreen(
+                                    title: 'Y O U   W O N ! ! !',
+                                    subtitle: 'Tap to Play Again',
+                                  ),
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ), // To here.
+              ),
+            ),
+          ),
+        ),
+      ),
     );
-    add(turnText);
-  }
-
-  Future<void> rollDice() async {
-    dice.roll();
-    dice.animate();
-
-    await Future.delayed(Duration(seconds: 2));
-    currentPlayer = (currentPlayer + 1) % totalPlayers;
-    turnText.text = 'Player ${currentPlayer + 1}\'s turn';
-    turnText.textRenderer = TextPaint(
-        style: TextStyle(fontSize: 24, color: playerColors[currentPlayer]));
-  }
-
-  @override
-  void onTapUp(TapUpEvent event) {
-    print("tap!");
-    rollDice();
   }
 }
