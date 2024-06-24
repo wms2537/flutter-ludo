@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
@@ -55,6 +57,7 @@ class LudoGame extends FlameGame with TapCallbacks {
   Future<void> onLoad() async {
     super.onLoad();
     await Flame.images.load('spritesheet.png');
+    await Flame.images.load('avatar_spritesheet.png');
 
     camera.viewfinder.anchor = Anchor.topLeft;
 
@@ -87,7 +90,12 @@ class LudoGame extends FlameGame with TapCallbacks {
       position: Vector2(size.x / 2, 50),
       anchor: Anchor.center,
       textRenderer: TextPaint(
-          style: TextStyle(fontSize: 24, color: playerColors[currentPlayer])),
+        style: TextStyle(
+          fontSize: 34,
+          fontWeight: FontWeight.w600,
+          color: playerColors[currentPlayer],
+        ),
+      ),
     );
     add(turnText);
   }
@@ -101,7 +109,6 @@ class LudoGame extends FlameGame with TapCallbacks {
     turnText.text = 'Player ${currentPlayer + 1}\'s turn';
     turnText.textRenderer = TextPaint(
         style: TextStyle(fontSize: 24, color: playerColors[currentPlayer]));
-    playerCanMove = true;
   }
 
   @override

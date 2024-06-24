@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Dice extends RectangleComponent {
   int value = 6;

@@ -5,7 +5,7 @@ import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:ludo/ludo_game.dart';
 
-Map<int, List<double>> spriteLoactionMap = {
+Map<int, List<double>> spriteLocationMap = {
   0: [1, 1, 366, 590], // x, y, w, h
   1: [369, 1, 366, 590],
   2: [737, 431, 290, 472],
@@ -22,9 +22,9 @@ class PlayerPin extends SpriteComponent
           sprite: Sprite(
             Flame.images.fromCache('spritesheet.png'),
             srcPosition: Vector2(
-                spriteLoactionMap[index]![0], spriteLoactionMap[index]![1]),
+                spriteLocationMap[index]![0], spriteLocationMap[index]![1]),
             srcSize: Vector2(
-                spriteLoactionMap[index]![2], spriteLoactionMap[index]![3]),
+                spriteLocationMap[index]![2], spriteLocationMap[index]![3]),
           ),
         );
 
