@@ -35,12 +35,58 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
           ..strokeWidth = 3
           ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 15));
 
-    add(PlayerPin(Vector2(game.unitSize * 1, game.unitSize * 1), playerIndex));
-    add(PlayerPin(
-        Vector2(game.unitSize * 2.5, game.unitSize * 1), playerIndex));
-    add(PlayerPin(
-        Vector2(game.unitSize * 1, game.unitSize * 2.2), playerIndex));
-    add(PlayerPin(
-        Vector2(game.unitSize * 2.5, game.unitSize * 2.2), playerIndex));
+    add(
+      PlayerPin(
+        Vector2(game.unitSize * 1, game.unitSize * 1),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+    );
+    add(
+      PlayerPin(
+        Vector2(game.unitSize * 2.5, game.unitSize * 1),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+    );
+    add(
+      PlayerPin(
+        Vector2(game.unitSize * 1, game.unitSize * 2.2),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+    );
+    add(
+      PlayerPin(
+        Vector2(game.unitSize * 2.5, game.unitSize * 2.2),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+    );
+  }
+
+  PlayerPin removePin(PlayerPin pin) {
+    remove(pin);
+    return pin;
   }
 }

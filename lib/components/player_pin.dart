@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
-import 'package:flutter/material.dart';
 import 'package:ludo/ludo_game.dart';
 
 Map<int, List<double>> spriteLoactionMap = {
@@ -12,8 +12,11 @@ Map<int, List<double>> spriteLoactionMap = {
   3: [737, 1, 266, 428],
 };
 
-class PlayerPin extends SpriteComponent with HasGameReference<LudoGame> {
-  PlayerPin(Vector2 position, int index)
+class PlayerPin extends SpriteComponent
+    with TapCallbacks, HasGameReference<LudoGame> {
+  Function(TapUpEvent event, PlayerPin pin) onTap;
+  final int index;
+  PlayerPin(Vector2 position, this.index, this.onTap)
       : super(
           position: position,
           sprite: Sprite(
@@ -29,5 +32,12 @@ class PlayerPin extends SpriteComponent with HasGameReference<LudoGame> {
   FutureOr<void> onLoad() {
     size = Vector2(game.unitSize * 0.5, game.unitSize * 0.8);
     return super.onLoad();
+  }
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    if (game.currentPlayer == index && game.playerCanMove) {
+      onTap(event, this);
+    }
   }
 }
