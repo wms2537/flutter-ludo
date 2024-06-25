@@ -13,17 +13,10 @@ Map<int, List<double>> spriteLocationMap = {
 
 class PlayerAvatar extends SpriteComponent with HasGameReference<LudoGame> {
   PlayerAvatar(
-    Vector2 positionTop,
-    Vector2 positionBtm,
+    Vector2 position,
     int index,
   ) : super(
-          position: (index == 0 || index == 1)
-              ? (index % 2 == 0)
-                  ? Vector2(positionTop.x * 0, positionTop.y * 1.37)
-                  : Vector2(positionTop.x * 6.4, positionTop.y * 1.37)
-              : (index % 2 == 0)
-                  ? Vector2(positionBtm.x * 0, positionBtm.y * 1.15)
-                  : Vector2(positionBtm.x * 6.4, positionBtm.y * 1.15),
+          position: position,
           sprite: Sprite(
             Flame.images.fromCache('avatar_spritesheet.png'),
             srcPosition: Vector2(
@@ -35,7 +28,7 @@ class PlayerAvatar extends SpriteComponent with HasGameReference<LudoGame> {
 
   @override
   FutureOr<void> onLoad() {
-    size = Vector2(150, 150);
+    size = Vector2(game.unitSize * 2.75, game.unitSize * 2.75);
     return super.onLoad();
   }
 }

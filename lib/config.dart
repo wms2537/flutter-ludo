@@ -8,7 +8,7 @@ const playerColors = [
   Color(0xff2fd06f),
 ];
 
-const gameWidth = 820.0;
+const gameWidth = 900.0;
 const gameHeight = 1600.0;
 
 //47 steps [0...46]

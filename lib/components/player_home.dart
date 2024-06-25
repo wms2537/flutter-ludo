@@ -12,6 +12,7 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
   late TextComponent playerName;
   late List<PlayerPin?> _homePins;
   late List<Vector2> _homePinLocations;
+  late List<Vector2> _avatarPositions;
 
   bool get isHomeFull =>
       _homePins[0] != null &&
@@ -26,12 +27,6 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
     "Yixuan",
     "Jupeng",
   ];
-  Map avatarBgVector = {
-    0: [1, 1], // x, y
-    1: [2163, 1],
-    2: [1, 2163],
-    3: [2163, 2163],
-  };
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
@@ -90,6 +85,13 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
       add(pin!);
     }
 
+    _avatarPositions = [
+      Vector2(0, game.unitSize * -4.5), //top left
+      Vector2(game.unitSize * 1.25, game.unitSize * -4.5), //top right
+      Vector2(0, game.unitSize * 5), //bottom left
+      Vector2(game.unitSize * 1.25, game.unitSize * 5), //bottom right
+    ];
+
     //player name
     playerName = TextComponent(
       text: playerNames[playerIndex],
@@ -110,6 +112,8 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
       ),
     );
     add(playerName);
+
+    add(PlayerAvatar(_avatarPositions[playerIndex], playerIndex));
   }
 
   @override
@@ -131,42 +135,15 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
         paint
           ..strokeWidth = 3
           ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 15));
+
     //player avatar bg
-    final avatarBgRRect = (playerIndex == 0 || playerIndex == 1)
-        ? (playerIndex % 2 == 0)
-            ? RRect.fromLTRBR(
-                //top left
-                0,
-                game.unitSize * -4.5,
-                game.unitSize * 2.7,
-                game.unitSize * -1.8,
-                const Radius.circular(24.0),
-              )
-            : RRect.fromLTRBR(
-                //top right
-                70,
-                game.unitSize * -4.5,
-                game.unitSize * 4,
-                game.unitSize * -1.8,
-                const Radius.circular(24.0),
-              )
-        : (playerIndex % 2 == 0)
-            ? RRect.fromLTRBR(
-                //bottom left
-                0,
-                game.unitSize * 5,
-                game.unitSize * 2.7,
-                game.unitSize * 7.8,
-                const Radius.circular(24.0),
-              )
-            : RRect.fromLTRBR(
-                //bottom right
-                70,
-                game.unitSize * 5,
-                game.unitSize * 4,
-                game.unitSize * 7.8,
-                const Radius.circular(24.0),
-              );
+    final avatarBgRRect = RRect.fromLTRBR(
+      _avatarPositions[playerIndex][0],
+      _avatarPositions[playerIndex][1],
+      _avatarPositions[playerIndex][0] + game.unitSize * 2.75,
+      _avatarPositions[playerIndex][1] + game.unitSize * 2.75,
+      const Radius.circular(24.0),
+    );
 
     final avatarBgPaint = Paint()
       ..color = playerColors[playerIndex]

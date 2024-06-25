@@ -117,7 +117,8 @@ class LudoGame extends FlameGame with TapCallbacks {
     turnText.text =
         'Player ${currentPlayer + 1}\'s ${playerCanMove ? 'move turn' : 'roll dice'}';
     turnText.textRenderer = TextPaint(
-        style: TextStyle(fontSize: 24, color: playerColors[currentPlayer]));
+        style: TextStyle(
+            fontSize: unitSize * 0.8, color: playerColors[currentPlayer]));
   }
 
   @override
