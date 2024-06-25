@@ -21,7 +21,7 @@ class LudoGame extends FlameGame with TapCallbacks {
   late TextComponent turnText;
   late Destination destination;
   final List<PlayerHome> playerHomes = [];
-  int currentPlayer = 0;
+  int _currentPlayer = 0;
   bool playerCanMove = false;
   final int totalPlayers = 4;
 
@@ -37,6 +37,9 @@ class LudoGame extends FlameGame with TapCallbacks {
   double get height => size.y;
   double get unitSize => size.x / 15;
   Vector2 get center => size / 2;
+
+  int get currentPlayer => _currentPlayer;
+
   late PlayState _playState;
   PlayState get playState => _playState;
   set playState(PlayState playState) {
@@ -93,7 +96,7 @@ class LudoGame extends FlameGame with TapCallbacks {
         style: TextStyle(
           fontSize: 34,
           fontWeight: FontWeight.w600,
-          color: playerColors[currentPlayer],
+          color: playerColors[_currentPlayer],
         ),
       ),
     );
@@ -106,8 +109,14 @@ class LudoGame extends FlameGame with TapCallbacks {
     dice.animate();
 
     await Future.delayed(const Duration(milliseconds: 500));
-    currentPlayer = (currentPlayer + 1) % totalPlayers;
-    playerCanMove = !playerHomes[currentPlayer].isHomeFull || dice.value == 6;
+    playerCanMove = !playerHomes[_currentPlayer].isHomeFull || dice.value == 6;
+    if (!playerCanMove) {
+      nextPlayer();
+    }
+  }
+
+  void nextPlayer() {
+    _currentPlayer = (_currentPlayer + 1) % totalPlayers;
   }
 
   @override
@@ -115,16 +124,10 @@ class LudoGame extends FlameGame with TapCallbacks {
     super.render(canvas);
 
     turnText.text =
-        'Player ${currentPlayer + 1}\'s ${playerCanMove ? 'move turn' : 'roll dice'}';
+        'Player ${_currentPlayer + 1}\'s ${playerCanMove ? 'move turn' : 'roll dice'}';
     turnText.textRenderer = TextPaint(
         style: TextStyle(
-            fontSize: unitSize * 0.8, color: playerColors[currentPlayer]));
-  }
-
-  @override
-  void onTapUp(TapUpEvent event) {
-    print("tap!");
-    rollDice();
+            fontSize: unitSize * 0.8, color: playerColors[_currentPlayer]));
   }
 
   @override

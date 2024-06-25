@@ -41,6 +41,7 @@ class PlayerPin extends SpriteComponent
   void onTapUp(TapUpEvent event) {
     if (game.currentPlayer == playerIndex && game.playerCanMove) {
       onTap(event, this);
+      game.nextPlayer();
     }
   }
 

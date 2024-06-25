@@ -2,9 +2,12 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:ludo/ludo_game.dart';
 
-class Dice extends RectangleComponent {
+class Dice extends RectangleComponent
+    with TapCallbacks, HasGameReference<LudoGame> {
   int value = 6;
   final Random random = Random();
 
@@ -33,6 +36,12 @@ class Dice extends RectangleComponent {
 
   void roll() {
     value = random.nextInt(6) + 1;
+  }
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
+    game.rollDice();
   }
 
   void animate() {
