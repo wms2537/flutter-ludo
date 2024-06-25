@@ -10,6 +10,14 @@ import 'package:ludo/ludo_game.dart';
 class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
   final int playerIndex;
   late TextComponent playerName;
+  late List<PlayerPin?> _homePins;
+  late List<Vector2> _homePinLocations;
+
+  bool get isHomeFull =>
+      _homePins[0] != null &&
+      _homePins[1] != null &&
+      _homePins[2] != null &&
+      _homePins[3] != null;
 
   PlayerHome(this.playerIndex, Vector2 position) : super(position: position);
   List<String> playerNames = [
@@ -28,6 +36,80 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
   FutureOr<void> onLoad() async {
     super.onLoad();
     size = Vector2(game.unitSize * 2.5, game.unitSize * 2.5);
+
+    _homePinLocations = [
+      Vector2(game.unitSize * 1, game.unitSize * 1),
+      Vector2(game.unitSize * 2.5, game.unitSize * 1),
+      Vector2(game.unitSize * 1, game.unitSize * 2.2),
+      Vector2(game.unitSize * 2.5, game.unitSize * 2.2),
+    ];
+    _homePins = [
+      PlayerPin(
+        Vector2(game.unitSize * 1, game.unitSize * 1),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin, 0));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+      PlayerPin(
+        Vector2(game.unitSize * 2.5, game.unitSize * 1),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin, 1));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+      PlayerPin(
+        Vector2(game.unitSize * 1, game.unitSize * 2.2),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin, 2));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+      PlayerPin(
+        Vector2(game.unitSize * 2.5, game.unitSize * 2.2),
+        playerIndex,
+        (event, pin) {
+          if (game.dice.value == 6) {
+            game.board.addPin(removePin(pin, 3));
+            game.playerCanMove = false;
+          }
+        },
+      ),
+    ];
+
+    for (var pin in _homePins) {
+      add(pin!);
+    }
+
+    //player name
+    playerName = TextComponent(
+      text: playerNames[playerIndex],
+      position: (playerIndex == 0 || playerIndex == 1)
+          ? (playerIndex % 2 == 0)
+              ? Vector2(size.x / 2, size.y / -2)
+              : Vector2(size.x / 0.95, size.y / -2)
+          : (playerIndex % 2 == 0)
+              ? Vector2(size.x / 2, size.y / 0.295) //btm left
+              : Vector2(size.x / 0.95, size.y / 0.295), //btm right
+      anchor: Anchor.center,
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+        ),
+      ),
+    );
+    add(playerName);
   }
 
   @override
@@ -100,80 +182,28 @@ class PlayerHome extends PositionComponent with HasGameReference<LudoGame> {
         ..strokeWidth = 3
         ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 15),
     );
-
-    //player name
-    playerName = TextComponent(
-      text: playerNames[playerIndex],
-      position: (playerIndex == 0 || playerIndex == 1)
-          ? (playerIndex % 2 == 0)
-              ? Vector2(size.x / 2, size.y / -2)
-              : Vector2(size.x / 0.95, size.y / -2)
-          : (playerIndex % 2 == 0)
-              ? Vector2(size.x / 2, size.y / 0.295) //btm left
-              : Vector2(size.x / 0.95, size.y / 0.295), //btm right
-      anchor: Anchor.center,
-      textRenderer: TextPaint(
-        style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.w500,
-          color: Colors.white,
-        ),
-      ),
-    );
-    add(playerName);
-
-    add(
-      PlayerPin(
-        Vector2(game.unitSize * 1, game.unitSize * 1),
-        playerIndex,
-        (event, pin) {
-          if (game.dice.value == 6) {
-            game.board.addPin(removePin(pin));
-            game.playerCanMove = false;
-          }
-        },
-      ),
-    );
-    add(
-      PlayerPin(
-        Vector2(game.unitSize * 2.5, game.unitSize * 1),
-        playerIndex,
-        (event, pin) {
-          if (game.dice.value == 6) {
-            game.board.addPin(removePin(pin));
-            game.playerCanMove = false;
-          }
-        },
-      ),
-    );
-    add(
-      PlayerPin(
-        Vector2(game.unitSize * 1, game.unitSize * 2.2),
-        playerIndex,
-        (event, pin) {
-          if (game.dice.value == 6) {
-            game.board.addPin(removePin(pin));
-            game.playerCanMove = false;
-          }
-        },
-      ),
-    );
-    add(
-      PlayerPin(
-        Vector2(game.unitSize * 2.5, game.unitSize * 2.2),
-        playerIndex,
-        (event, pin) {
-          if (game.dice.value == 6) {
-            game.board.addPin(removePin(pin));
-            game.playerCanMove = false;
-          }
-        },
-      ),
-    );
   }
 
-  PlayerPin removePin(PlayerPin pin) {
+  PlayerPin removePin(PlayerPin pin, int homePinIndex) {
     remove(pin);
+    _homePins[homePinIndex] = null;
     return pin;
+  }
+
+  void addPin(PlayerPin pin) {
+    for (int i = 0; i < 4; i++) {
+      if (_homePins[i] == null) {
+        _homePins[i] = pin
+          ..currentPosIndex = -1
+          ..position = _homePinLocations[i]
+          ..onTap = (event, pin) {
+            if (game.dice.value == 6) {
+              game.board.addPin(removePin(pin, i));
+              game.playerCanMove = false;
+            }
+          };
+        add(_homePins[i]!);
+      }
+    }
   }
 }

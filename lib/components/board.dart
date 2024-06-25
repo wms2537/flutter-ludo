@@ -120,12 +120,11 @@ class Board extends RectangleComponent with HasGameReference<LudoGame> {
 
   void addPin(PlayerPin pin) {
     add(pin
-      ..position = Vector2(x, y)
+      ..currentPosIndex = 0
+      ..movePin(0)
       ..onTap = (event, pin) {
-        movePin(pin);
+        pin.movePin(null);
         game.playerCanMove = false;
       });
   }
-
-  void movePin(PlayerPin pin) {}
 }

@@ -101,12 +101,21 @@ class LudoGame extends FlameGame with TapCallbacks {
   }
 
   Future<void> rollDice() async {
+    if (playerCanMove) return;
     dice.roll();
     dice.animate();
 
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 500));
     currentPlayer = (currentPlayer + 1) % totalPlayers;
-    turnText.text = 'Player ${currentPlayer + 1}\'s turn';
+    playerCanMove = !playerHomes[currentPlayer].isHomeFull || dice.value == 6;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+
+    turnText.text =
+        'Player ${currentPlayer + 1}\'s ${playerCanMove ? 'move turn' : 'roll dice'}';
     turnText.textRenderer = TextPaint(
         style: TextStyle(fontSize: 24, color: playerColors[currentPlayer]));
   }
